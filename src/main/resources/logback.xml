@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    
+    <appender name="PERF" class="ch.qos.logback.core.FileAppender">
+        <file>logs/performance.log</file>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+
+    <logger name="Performance" level="INFO">
+        <appender-ref ref="PERF" />
+    </logger>
+    
+    <logger name="org.springframework" level="INFO"/>
+    
+</configuration>

@@ -1,0 +1,14 @@
+<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+<aspectj>
+
+    <aspects>
+        <aspect name="de.accso.performancetesting.tools.PerformanceLogger"/>
+    </aspects>
+
+    <weaver options="-verbose -showWeaveInfo">
+        <include within="de.accso.performancetesting.tools.*"/>
+        <include within="de.accso.performancetesting..*"/>
+        <include within="org.springframework.data.repository..*"/>
+    </weaver>
+
+</aspectj>
