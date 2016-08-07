@@ -1,0 +1,13 @@
+# Dockerfile zum Bau eines Kibana-Images auf Basis des offiziellen Kibana-Images
+# Aufrufbeispiel zum Image-Bau: docker build -f kibanacontainer-Dockerfile -t kibana_image .
+# - Erzeugt das Image mit Namen kibana_image, das zusätzlich Kibana-Plugins enthält.
+# Aufrufbeispiel zum Container-Start: docker run --name kibana --link elasticsearch:elasticsearch -p 5601:5601 -d kibana_image
+# - Erzeugt den Container namens kibana und macht Kibana unter Port 5601 von außen erreichbar.
+# - Voraussetzung: Elasticsearch ist im Container names elasticsearch und unter dem Standard-Port 9200 erreichbar.
+
+FROM kibana:4.5.1
+
+# Installation des Elasticsearch-REST-Plugins
+# anschließend erreichbar unter http://<domain>:<port=5601>/app/sense
+# gosu, um Installation als kibana-Nutzer vorzunehmen (analog Entrypoint; s.a. http://container-solutions.com/6-dockerfile-tips-official-images/)
+RUN gosu kibana kibana plugin --install elastic/sense

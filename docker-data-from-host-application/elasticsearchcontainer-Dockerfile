@@ -1,0 +1,15 @@
+# Dockerfile zum Bau eines Elasticsearch-Images auf Basis des offiziellen Elasticsearch-Images
+# Aufrufbeispiel zum Image-Bau: docker build -f elasticsearchcontainer-Dockerfile -t elasticsearch_image .
+# - Erzeugt das Image mit Namen elasticsearch_image, das zusätzlich Elasticsearch-Plugins enthält.
+# Aufrufbeispiel zum Container-Start: docker run -p 9200:9200 -p 9300:9300 -d --volumes-from elkdata --name elasticsearch elasticsearch_image
+# - Erzeugt den Container namens elasticsearch und macht Elasticsearch unter Port 9200 von außen erreichbar.
+# - Voraussetzung: Der Daten-Container elkdata existiert (und sollte das Datenverzeichnis /usr/share/elasticsearch/data als Volume anbieten).
+
+FROM elasticsearch:2.3.0
+
+# Installation von zwei Alternativen für Management-Plugins
+
+# anschließend erreichbar unter http://<domain>:<port=9200>/_plugin/hq
+RUN /usr/share/elasticsearch/bin/plugin install royrusso/elasticsearch-HQ
+# anschließend erreichbar unter http://<domain>:<port=9200>/_plugin/head
+RUN /usr/share/elasticsearch/bin/plugin install mobz/elasticsearch-head

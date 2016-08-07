@@ -1,0 +1,69 @@
+# Baut die Images für den Data-Container, Elasticsearch, Logstash und Kibana. Fährt die Services hoch elkdata, elasticsearch, logstash, kibana.
+# benötigte Host-Dateien:
+# - unter "./configfiles": Logstash-Konfigurationsdatei
+# - unter "../src/workspace/performancetesting/logs": Performancelog-Datei für Logstash
+# Aufruf zum Starten: docker-compose up -d
+# Aufruf zum Stoppen: docker-compose down
+#
+# zur "volumes_from"-Notation (s.a. https://github.com/docker/compose/issues/1972#issuecomment-137480249).
+# - Verwendung hier in Service-Notation, da elkdata als Service definiert ist
+# - Falls Data-Container unabhängig von diesem Compose erzeugt werden soll: Verwendung von "container:" notwendig
+
+# neue Version zur image-Benennung
+version: '2'
+
+services:
+  # stellt persistente Datenverzeichnisse über die Lebenszeit der verwendenden Services bereit (Elasticsearch-Index)
+  elkdata:
+    build: 
+      context: .
+      dockerfile: datacontainer-Dockerfile
+    image: elkdata_image
+    container_name: elkdata
+
+  # stellt Elasticsearch unter den Standard-Ports bereit
+  elasticsearch:
+    build: 
+      context: .
+      dockerfile: elasticsearchcontainer-Dockerfile
+    image: elasticsearch_image
+    container_name: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes_from:
+      - elkdata
+    depends_on:
+      - elkdata
+
+  # fährt Logstash gegen Elasticseearch hoch; Konfigurationsdatei und Log-Verzeichnis vom Host
+  logstash:
+    image: logstash:2.3.2
+    container_name: logstash
+    # Konfigurationsdatei gemäß Host-Volume-Mapping
+    command: logstash -f /logstash/config/applicationdata-from-file-logstash.conf 
+    volumes:
+      - ./configfiles:/logstash/config
+      - ../src/workspace/performancetesting/logs:/logstash/logs
+    volumes_from:
+      - elkdata
+    depends_on:
+      - elasticsearch
+      - elkdata
+ 
+  # stellt Kibana unter dem Standard-Port bereit
+  kibana:
+    build: 
+      context: .
+      dockerfile: kibanacontainer-Dockerfile
+    image: kibana_image
+    container_name: kibana
+    links:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+

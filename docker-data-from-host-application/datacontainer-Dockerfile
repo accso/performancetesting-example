@@ -1,0 +1,9 @@
+# Dockerfile zum Bau eines Data-Only-Images auf Basis des minimalen Images Busybox
+# Aufrufbeispiel zum Image-Bau: docker build -f datacontainercontainer-Dockerfile -t elkdata_image .
+# Ergebnis:
+# - Datenverzeichnis für Elasticsearch
+
+FROM busybox
+
+# Datenverzeichnis für elasticsearch-Container erzeugen und zur Verfügung stellen
+VOLUME /usr/share/elasticsearch/data
